@@ -1,0 +1,182 @@
+/* --------------------------------------------------
+   COLOR PALETTE
+   #543b37 #db9c85 #e56d84 #e73b68 #feebed
+-------------------------------------------------- */
+
+
+/* --------------------------------------------------
+   GLOBAL STYLES
+-------------------------------------------------- */
+body {
+    background-color: #DB9C85;
+    color: #543b37;
+    font-family: 'Merienda', cursive;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+
+/* --------------------------------------------------
+   HEADER & LOGO
+-------------------------------------------------- */
+header {
+    width: 15%;
+    float: none;
+    background-color: #DB9C85;
+}
+
+#logo {
+    display: flex;
+    justify-content: center;  /* Centers horizontally */
+    align-items: center;      /* Centers vertically */
+    height: 100px;            /* Adjust height as needed */
+}
+
+
+/* --------------------------------------------------
+   NAVIGATION BAR
+-------------------------------------------------- */
+nav {
+    width: 100%;
+    background-color: #DB9C85;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1em 0;
+    box-sizing: border-box;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+nav li {
+    font-size: 1.5em;
+}
+
+nav li a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 0.5em 1em;
+    text-decoration: none;
+}
+
+
+/* --------------------------------------------------
+   BIO SECTION
+-------------------------------------------------- */
+#bio {
+    text-align: center;
+    padding: 5%;
+    background-color: #FEEBED;
+    margin: 0 auto;
+    margin-bottom: 18px;
+}
+
+
+/* --------------------------------------------------
+   MAIN CONTENT AREA
+-------------------------------------------------- */
+main {
+    clear: left;
+    background-color: #FEEBED;
+    padding: 2%;
+    margin: 0 2%;
+}
+
+
+/* --------------------------------------------------
+   FOOTER STYLES
+-------------------------------------------------- */
+footer {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    text-decoration: none;
+}
+
+/* Footer link states */
+footer a {
+    color: #543B37;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #E73B68;
+    text-decoration: underline;
+}
+
+footer a:visited {
+    color: #FEEBED;
+}
+
+footer a:active {
+    color: #E56D84;
+}
+
+
+/* --------------------------------------------------
+   FORM STYLING
+-------------------------------------------------- */
+form {
+    background-color: #FEEBED;
+    padding: 2em;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(84, 59, 55, 0.2);
+    max-width: 600px;
+    margin: 2em auto;
+    font-size: 1.1em;
+    color: #543B37;
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+    color: #543B37;
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1.5em;
+    border: 2px solid #DB9C85;
+    border-radius: 10px;
+    font-size: 1em;
+    font-family: 'Merienda', cursive;
+    background-color: #ffffff;
+    color: #543B37;
+}
+
+
+/* --------------------------------------------------
+   BUTTON STYLING
+-------------------------------------------------- */
+input[type="submit"],
+button {
+    background-color: #E73B68;
+    color: white;
+    border: none;
+    padding: 0.75em 1.5em;
+    border-radius: 20px;
+    font-size: 1em;
+    font-family: 'Merienda', cursive;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover,
+button:hover {
+    background-color: #E56D84;
+}
