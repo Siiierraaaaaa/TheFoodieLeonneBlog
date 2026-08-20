@@ -6,59 +6,71 @@ import { environment } from '../environments/environment';
   providedIn: 'root'
 })
 export class Supabase {
-  private supabase: SupabaseClient;
+
+  private client: SupabaseClient;
 
   constructor() {
-    this.supabase = createClient(
+    this.client = createClient(
       environment.supabaseUrl,
       environment.supabasePublishableKey
     );
   }
-  async getPosts() {
-  const { data, error } = await this.supabase
-    .from('posts')
-    .select('*');
 
-  if (error) {
-    console.error('Error fetching posts:', error);
-    return [];
+  // LOGIN
+  async signIn(email: string, password: string) {
+
+    const { data, error } = await this.client.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
   }
-
-  return data;
-}
-async signIn(email: string, password: string) {
-  const { data, error } = await this.supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
 async getSession() {
-  return await this.supabase.auth.getSession();
+  return await this.client.auth.getSession();
 }
-async addPost(post: {
-  title: string;
-  description: string;
-  category: string;
-  type: string;
-  image_url: string;
-  rating: number | null;
-}) {
-  const { data, error } = await this.supabase
-    .from('posts')
-    .insert(post)
-    .select()
-    .single();
 
-  if (error) {
-    throw error;
+  // GET ALL POSTS
+  async getPosts() {
+
+    const { data, error } = await this.client
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
   }
 
-  return data;
-}
+
+  // CREATE A POST
+  async createPost(post: {
+    title: string;
+    description: string;
+    category: string;
+    type: string;
+    image_url: string | null;
+    rating: number | null;
+  }) {
+
+    const { data, error } = await this.client
+      .from('posts')
+      .insert(post)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
 }
