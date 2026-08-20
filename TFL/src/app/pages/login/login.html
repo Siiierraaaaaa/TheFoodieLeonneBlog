@@ -1,0 +1,94 @@
+<div class="min-h-screen bg-[#FEEBED] flex items-center justify-center px-6">
+
+  <div class="w-full max-w-md">
+
+    <!-- Brand -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-[#543B37]">
+        The Foodie Leonne
+      </h1>
+
+      <p class="mt-2 text-[#543B37]/70">
+        Welcome back, Sierra
+      </p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+
+      <h2 class="text-2xl font-bold text-[#543B37] mb-6">
+        Admin Login
+      </h2>
+
+      <form (ngSubmit)="login()" class="space-y-5">
+
+        <!-- Email -->
+        <div>
+          <label
+            for="email"
+            class="block text-sm font-semibold text-[#543B37] mb-2">
+            Email
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            class="w-full px-4 py-3 rounded-lg border border-[#DB9C85]/40
+                   focus:outline-none focus:ring-2 focus:ring-[#E56D84]"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label
+            for="password"
+            class="block text-sm font-semibold text-[#543B37] mb-2">
+            Password
+          </label>
+
+          <input
+            id="password"
+            type="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+            class="w-full px-4 py-3 rounded-lg border border-[#DB9C85]/40
+                   focus:outline-none focus:ring-2 focus:ring-[#E56D84]"
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <!-- Error -->
+        @if (errorMessage) {
+          <p class="text-sm text-red-600">
+            {{ errorMessage }}
+          </p>
+        }
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="w-full py-3 rounded-lg bg-[#E56D84] text-white
+                 font-semibold hover:bg-[#E73B68]
+                 transition disabled:opacity-50">
+
+          @if (loading) {
+            Logging in...
+          } @else {
+            Log In
+          }
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
