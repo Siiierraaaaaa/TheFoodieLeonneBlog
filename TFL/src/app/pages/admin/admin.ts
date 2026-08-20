@@ -33,13 +33,13 @@ export class Admin {
   totalReviews = 0;
 
   showPostForm = false;
-  editingPostId: number | null = null;
 
   title = '';
   description = '';
   category = '';
   type = '';
   image_url = '';
+  selectedImage: File | null = null;
   rating: number | null = null;
 
   successMessage = '';
@@ -92,64 +92,25 @@ export class Admin {
     this.category = '';
     this.type = '';
     this.image_url = '';
+    this.selectedImage = null;
     this.rating = null;
     this.successMessage = '';
     this.errorMessage = '';
   }
 
-  async createPost() {
-    this.loading = true;
-    this.successMessage = '';
-    this.errorMessage = '';
+  onImageSelected(event: Event) {
 
-    try {
-      const postData = {
-        title: this.title,
-        description: this.description,
-        category: this.category,
-        type: this.type,
-        image_url: this.image_url || null,
-        rating: this.rating
-      };
+    const input = event.target as HTMLInputElement;
 
-      if (this.editingPostId !== null) {
+    if (input.files && input.files.length > 0) {
+      this.selectedImage = input.files[0];
 
-        await this.supabase.updatePost(
-          this.editingPostId,
-          postData
-        );
-
-        this.successMessage = 'Post updated successfully!';
-
-      } else {
-
-        await this.supabase.createPost(postData);
-
-        this.successMessage = 'Post published successfully!';
-
-      }
-
-      await this.loadPosts();
-
-      this.title = '';
-      this.description = '';
-      this.category = '';
-      this.type = '';
-      this.image_url = '';
-      this.rating = null;
-      this.editingPostId = null;
-
-    } catch (error: any) {
-      console.error('Error saving post:', error);
-      this.errorMessage = error.message;
-
-    } finally {
-      this.loading = false;
-      this.cdr.markForCheck();
+      console.log('Selected image:', this.selectedImage);
     }
   }
   editPost(post: Post) {
-    this.editingPostId = post.id;
+
+    this.showPostForm = true;
 
     this.title = post.title;
     this.description = post.description;
@@ -158,10 +119,69 @@ export class Admin {
     this.image_url = post.image_url || '';
     this.rating = post.rating;
 
-    this.showPostForm = true;
-
     this.successMessage = '';
     this.errorMessage = '';
+
+  }
+
+  async createPost() {
+    this.loading = true;
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    try {
+
+      // Upload image first
+      if (this.selectedImage) {
+        this.image_url = await this.supabase.uploadPostImage(
+          this.selectedImage
+        );
+      }
+
+      await this.supabase.createPost({
+        title: this.title,
+        description: this.description,
+        category: this.category,
+        type: this.type,
+        image_url: this.image_url || null,
+        rating: this.rating
+      });
+
+      this.successMessage = 'Post published successfully!';
+
+      await this.loadPosts();
+
+      this.title = '';
+      this.description = '';
+      this.category = '';
+      this.type = '';
+      this.image_url = '';
+      this.selectedImage = null;
+      this.rating = null;
+
+    } catch (error: any) {
+      console.error('Error creating post:', error);
+      this.errorMessage = error.message;
+    } finally {
+      this.loading = false;
+      this.cdr.markForCheck();
+    }
+  }
+  async logout() {
+
+    try {
+
+      await this.supabase.signOut();
+
+      console.log('Logout successful');
+
+    } catch (error: any) {
+
+      console.error('Logout error:', error);
+      this.errorMessage = error.message;
+
+    }
+
   }
   async deletePost(id: number) {
     const confirmed = confirm('Are you sure you want to delete this post?');
@@ -176,20 +196,6 @@ export class Admin {
     } catch (error: any) {
       console.error('Error deleting post:', error);
       this.errorMessage = error.message;
-    }
-  }
-  async logout() {
-    try {
-
-      await this.supabase.signOut();
-
-      window.location.href = '/login';
-
-    } catch (error: any) {
-
-      console.error('Logout error:', error);
-      this.errorMessage = error.message;
-
     }
   }
 }

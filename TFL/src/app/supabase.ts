@@ -29,6 +29,14 @@ export class Supabase {
 
     return data;
   }
+    // LOGOUT
+  async signOut() {
+    const { error } = await this.client.auth.signOut();
+
+    if (error) {
+      throw error;
+    }
+  }
 
   async getSession() {
     return await this.client.auth.getSession();
@@ -37,14 +45,7 @@ export class Supabase {
   onAuthStateChange(callback: (event: string, session: any) => void) {
     return this.client.auth.onAuthStateChange(callback);
   }
-  // LOGOUT
-  async signOut() {
-    const { error } = await this.client.auth.signOut();
 
-    if (error) {
-      throw error;
-    }
-  }
   // GET ALL POSTS
   async getPosts() {
     console.log('GET POSTS: function called');
@@ -62,6 +63,29 @@ export class Supabase {
     }
 
     return data;
+  }
+
+  // UPLOAD POST IMAGE
+  async uploadPostImage(file: File) {
+
+    const fileName = `${Date.now()}-${file.name}`;
+
+    const { data, error } = await this.client
+      .storage
+      .from('post-images')
+      .upload(fileName, file);
+
+    if (error) {
+      throw error;
+    }
+
+    const { data: urlData } = this.client
+      .storage
+      .from('post-images')
+      .getPublicUrl(data.path);
+      console.log('IMAGE PUBLIC URL:', urlData.publicUrl);
+
+    return urlData.publicUrl;
   }
 
   // CREATE A POST

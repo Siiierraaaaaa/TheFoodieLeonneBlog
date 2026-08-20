@@ -379,23 +379,27 @@
           </div>
 
 
-          <!-- Image URL -->
+          <!-- Image Upload -->
+          <!-- Image Upload -->
           <div>
 
-            <label for="image_url" class="block text-sm font-semibold text-[#543B37] mb-2">
+            <label for="image" class="block text-sm font-semibold text-[#543B37] mb-2">
 
-              Image URL
+              Post Image
 
             </label>
 
-            <input id="image_url" type="url" name="image_url" [(ngModel)]="image_url"
-              placeholder="https://example.com/image.jpg" class="w-full px-4 py-3 rounded-lg
-                       border border-[#DB9C85]/30
-                       focus:outline-none focus:ring-2
-                       focus:ring-[#E56D84]" />
+            <input id="image" type="file" accept="image/*" (change)="onImageSelected($event)" class="w-full px-4 py-3 rounded-lg
+           border border-[#DB9C85]/30
+           bg-white
+           focus:outline-none focus:ring-2
+           focus:ring-[#E56D84]" />
+
+            <p class="mt-2 text-sm text-[#543B37]/60">
+              Choose an image from your computer.
+            </p>
 
           </div>
-
 
           <!-- Rating -->
           <div>
