@@ -33,6 +33,7 @@ export class Admin {
   totalReviews = 0;
 
   showPostForm = false;
+  editingPostId: number | null = null;
 
   title = '';
   description = '';
@@ -111,12 +112,14 @@ export class Admin {
   editPost(post: Post) {
 
     this.showPostForm = true;
+    this.editingPostId = post.id;
 
     this.title = post.title;
     this.description = post.description;
     this.category = post.category;
     this.type = post.type;
     this.image_url = post.image_url || '';
+    this.selectedImage = null;
     this.rating = post.rating;
 
     this.successMessage = '';
@@ -131,26 +134,44 @@ export class Admin {
 
     try {
 
-      // Upload image first
+      // Upload a new image if one was selected
       if (this.selectedImage) {
         this.image_url = await this.supabase.uploadPostImage(
           this.selectedImage
         );
       }
 
-      await this.supabase.createPost({
+      const postData = {
         title: this.title,
         description: this.description,
         category: this.category,
         type: this.type,
         image_url: this.image_url || null,
         rating: this.rating
-      });
+      };
 
-      this.successMessage = 'Post published successfully!';
+      // UPDATE existing post
+      if (this.editingPostId !== null) {
+
+        await this.supabase.updatePost(
+          this.editingPostId,
+          postData
+        );
+
+        this.successMessage = 'Post updated successfully!';
+
+      } else {
+
+        // CREATE new post
+        await this.supabase.createPost(postData);
+
+        this.successMessage = 'Post published successfully!';
+
+      }
 
       await this.loadPosts();
 
+      // Reset form
       this.title = '';
       this.description = '';
       this.category = '';
@@ -158,13 +179,18 @@ export class Admin {
       this.image_url = '';
       this.selectedImage = null;
       this.rating = null;
+      this.editingPostId = null;
 
     } catch (error: any) {
-      console.error('Error creating post:', error);
+
+      console.error('Error saving post:', error);
       this.errorMessage = error.message;
+
     } finally {
+
       this.loading = false;
       this.cdr.markForCheck();
+
     }
   }
   async logout() {
