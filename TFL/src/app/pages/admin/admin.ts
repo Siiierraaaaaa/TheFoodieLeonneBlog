@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, afterNextRender, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Supabase } from '../../supabase';
 
@@ -20,9 +20,17 @@ interface Post {
   templateUrl: './admin.html',
   styleUrl: './admin.css'
 })
-export class Admin implements OnInit {
+export class Admin {
+
+  private supabase = inject(Supabase);
+  private cdr = inject(ChangeDetectorRef);
 
   posts: Post[] = [];
+  loadingPosts = true;
+
+  totalPosts = 0;
+  totalRecipes = 0;
+  totalReviews = 0;
 
   showPostForm = false;
 
@@ -37,23 +45,36 @@ export class Admin implements OnInit {
   errorMessage = '';
   loading = false;
 
-  constructor(private supabase: Supabase) {}
-
-  async ngOnInit() {
-    await this.loadPosts();
+  constructor() {
+    // afterNextRender only ever runs in the browser, after the first
+    // render — so this naturally avoids SSR issues (Supabase's session
+    // relies on localStorage, which doesn't exist on the server).
+    afterNextRender(() => {
+      this.loadPosts();
+    });
   }
 
   async loadPosts() {
     try {
       const data = await this.supabase.getPosts();
-
       this.posts = data || [];
-
+      this.totalPosts = this.posts.length;
+      this.totalRecipes = this.posts.filter(
+        post => post.type === 'Recipe'
+      ).length;
+      this.totalReviews = this.posts.filter(
+        post => post.type === 'Review'
+      ).length;
       console.log('Foodie Leonne posts:', this.posts);
-
     } catch (error: any) {
       console.error('Error loading posts:', error);
       this.errorMessage = error.message;
+    } finally {
+      this.loadingPosts = false;
+      // afterNextRender runs outside Angular's zone, so async work
+      // started inside it won't automatically trigger change detection.
+      // This forces Angular to re-check the view once data arrives.
+      this.cdr.markForCheck();
     }
   }
 
@@ -65,26 +86,22 @@ export class Admin implements OnInit {
 
   closePostForm() {
     this.showPostForm = false;
-
     this.title = '';
     this.description = '';
     this.category = '';
     this.type = '';
     this.image_url = '';
     this.rating = null;
-
     this.successMessage = '';
     this.errorMessage = '';
   }
 
   async createPost() {
-
     this.loading = true;
     this.successMessage = '';
     this.errorMessage = '';
 
     try {
-
       await this.supabase.createPost({
         title: this.title,
         description: this.description,
@@ -106,14 +123,27 @@ export class Admin implements OnInit {
       this.rating = null;
 
     } catch (error: any) {
-
       console.error('Error creating post:', error);
       this.errorMessage = error.message;
-
     } finally {
-
       this.loading = false;
+      this.cdr.markForCheck();
+    }
+  }
 
+  async deletePost(id: number) {
+    const confirmed = confirm('Are you sure you want to delete this post?');
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await this.supabase.deletePost(id);
+      await this.loadPosts();
+      this.successMessage = 'Post deleted successfully!';
+    } catch (error: any) {
+      console.error('Error deleting post:', error);
+      this.errorMessage = error.message;
     }
   }
 }
