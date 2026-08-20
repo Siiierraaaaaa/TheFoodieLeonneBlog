@@ -98,71 +98,71 @@ export class Admin {
   }
 
   async createPost() {
-  this.loading = true;
-  this.successMessage = '';
-  this.errorMessage = '';
+    this.loading = true;
+    this.successMessage = '';
+    this.errorMessage = '';
 
-  try {
-    const postData = {
-      title: this.title,
-      description: this.description,
-      category: this.category,
-      type: this.type,
-      image_url: this.image_url || null,
-      rating: this.rating
-    };
+    try {
+      const postData = {
+        title: this.title,
+        description: this.description,
+        category: this.category,
+        type: this.type,
+        image_url: this.image_url || null,
+        rating: this.rating
+      };
 
-    if (this.editingPostId !== null) {
+      if (this.editingPostId !== null) {
 
-      await this.supabase.updatePost(
-        this.editingPostId,
-        postData
-      );
+        await this.supabase.updatePost(
+          this.editingPostId,
+          postData
+        );
 
-      this.successMessage = 'Post updated successfully!';
+        this.successMessage = 'Post updated successfully!';
 
-    } else {
+      } else {
 
-      await this.supabase.createPost(postData);
+        await this.supabase.createPost(postData);
 
-      this.successMessage = 'Post published successfully!';
+        this.successMessage = 'Post published successfully!';
 
+      }
+
+      await this.loadPosts();
+
+      this.title = '';
+      this.description = '';
+      this.category = '';
+      this.type = '';
+      this.image_url = '';
+      this.rating = null;
+      this.editingPostId = null;
+
+    } catch (error: any) {
+      console.error('Error saving post:', error);
+      this.errorMessage = error.message;
+
+    } finally {
+      this.loading = false;
+      this.cdr.markForCheck();
     }
-
-    await this.loadPosts();
-
-    this.title = '';
-    this.description = '';
-    this.category = '';
-    this.type = '';
-    this.image_url = '';
-    this.rating = null;
-    this.editingPostId = null;
-
-  } catch (error: any) {
-    console.error('Error saving post:', error);
-    this.errorMessage = error.message;
-
-  } finally {
-    this.loading = false;
-    this.cdr.markForCheck();
   }
-}
-editPost(post: Post) {
-  this.editingPostId = post.id;
+  editPost(post: Post) {
+    this.editingPostId = post.id;
 
-  this.title = post.title;
-  this.description = post.description;
-  this.category = post.category;
-  this.type = post.type;
-  this.image_url = post.image_url || '';
-  this.rating = post.rating;
+    this.title = post.title;
+    this.description = post.description;
+    this.category = post.category;
+    this.type = post.type;
+    this.image_url = post.image_url || '';
+    this.rating = post.rating;
 
-  this.showPostForm = true;
+    this.showPostForm = true;
 
-  this.successMessage = '';
-  this.errorMessage = '';
-}
+    this.successMessage = '';
+    this.errorMessage = '';
+  }
   async deletePost(id: number) {
     const confirmed = confirm('Are you sure you want to delete this post?');
     if (!confirmed) {
@@ -176,6 +176,20 @@ editPost(post: Post) {
     } catch (error: any) {
       console.error('Error deleting post:', error);
       this.errorMessage = error.message;
+    }
+  }
+  async logout() {
+    try {
+
+      await this.supabase.signOut();
+
+      window.location.href = '/login';
+
+    } catch (error: any) {
+
+      console.error('Logout error:', error);
+      this.errorMessage = error.message;
+
     }
   }
 }

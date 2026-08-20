@@ -37,7 +37,14 @@ export class Supabase {
   onAuthStateChange(callback: (event: string, session: any) => void) {
     return this.client.auth.onAuthStateChange(callback);
   }
+  // LOGOUT
+  async signOut() {
+    const { error } = await this.client.auth.signOut();
 
+    if (error) {
+      throw error;
+    }
+  }
   // GET ALL POSTS
   async getPosts() {
     console.log('GET POSTS: function called');
