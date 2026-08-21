@@ -1,9 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
-  imports: [],
   selector: 'app-header',
-  styleUrl: './header.css',
+  standalone: true,
+  imports: [],
   templateUrl: './header.html',
+  styleUrl: './header.css'
 })
-export class Header {}
+export class Header {
+
+  private router = inject(Router);
+
+  goHome() {
+    this.router.navigate(['/']);
+  }
+
+  goAbout() {
+    this.router.navigate(['/about']);
+  }
+
+  goRecipes() {
+    this.router.navigate(['/recipes-reviews']);
+  }
+
+}
